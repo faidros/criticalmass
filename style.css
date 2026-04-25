@@ -1,0 +1,95 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.controls {
+    margin-bottom: 15px;
+}
+
+#game-mode, #reset-btn {
+    padding: 8px 12px;
+    margin: 0 5px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#game-mode:hover, #reset-btn:hover {
+    background-color: #444;
+}
+
+#status {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff4d4d; /* Starts with red */
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 2px;
+    background-color: #555;
+    border: 2px solid #555;
+    width: 90vw;
+    max-width: 500px;
+    height: 90vw;
+    max-height: 500px;
+    margin: 0 auto;
+}
+
+.cell {
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.cell:hover {
+    background-color: #444;
+}
+
+/* Basic styling for the orbs/kular (we'll expand this later) */
+.orb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    transition: transform 0.2s ease-in-out;
+}
+
+.orb.red {
+    background-color: #ff4d4d;
+    box-shadow: 0 0 5px #ff0000;
+}
+
+.orb.blue {
+    background-color: #4d4dff;
+    box-shadow: 0 0 5px #0000ff;
+}
