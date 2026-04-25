@@ -92,15 +92,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function processExplosions() {
         let cellsToExplode = [];
+        let redCount = 0;
+        let blueCount = 0;
 
         // Hitta alla rutor som har uppnått kritisk massa (lika många kulor som rutan har grannar)
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
+                if (board[r][c].player === 'red') redCount++;
+                if (board[r][c].player === 'blue') blueCount++;
+
                 const neighbors = getNeighbors(r, c);
                 if (board[r][c].mass >= neighbors.length) {
                     cellsToExplode.push({ r, c, neighbors, player: board[r][c].player });
                 }
             }
+        }
+
+        // Följande check avbryter animationer i förtid om nån spelare raderats ut under kedjereaktionen.
+        if ((redCount === 0 || blueCount === 0) && turnCount > 1) {
+            checkWinCondition();
+            return; // Stoppa loopen härifrån
         }
 
         if (cellsToExplode.length > 0) {
@@ -249,17 +260,32 @@ document.addEventListener('DOMContentLoaded', () => {
         sim[r][c].mass += 1;
 
         let explodes = true;
-        while (explodes) {
+        let iterations = 0;
+        while (explodes && iterations < 1000) {
+            iterations++;
             explodes = false;
             let cellsToExplode = [];
+            
+            let redCount = 0;
+            let blueCount = 0;
 
             for (let ir = 0; ir < rows; ir++) {
                 for (let ic = 0; ic < cols; ic++) {
+                    if (sim[ir][ic].player === 'red') redCount++;
+                    if (sim[ir][ic].player === 'blue') blueCount++;
+
                     const neighbors = getNeighbors(ir, ic); // Samma funktion som används vanligtvis
                     if (sim[ir][ic].mass >= neighbors.length) {
                         cellsToExplode.push({ r: ir, c: ic, neighbors, player: sim[ir][ic].player });
                     }
                 }
+            }
+
+            // Vid en massiv kedjereaktion vinner man när den andres färger har raderats helt.
+            // Simuleraren behöver alltså inte fortsätta räkna på massans fysik därefter,
+            // det skulle annars kunna skapa oändliga loopar i datorns hjärna!
+            if (redCount === 0 || blueCount === 0) {
+                break;
             }
 
             if (cellsToExplode.length > 0) {
