@@ -9,18 +9,22 @@
 <body>
     <div class="container">
         <h1>Critical Mass</h1>
-        <div class="controls">
-            <select id="game-mode">
-                <option value="-1">Människa vs Människa</option>
-                <option value="0">Dator Level 0 (Slumping drag)</option>
-                <option value="1">Dator Level 1 (Hörn och kanter)</option>
-                <option value="2">Dator Level 2 (Defensiv)</option>
-                <option value="3">Dator Level 3 (Aggressiv)</option>
-            </select>
-            <button id="reset-btn">Börja om</button>
+        <div class="game-wrapper">
+            <div class="sidebar">
+                <div id="status">Spelare 1 (Röd) tur</div>
+                <div class="controls">
+                    <select id="game-mode">
+                        <option value="-1">Människa vs Människa</option>
+                        <option value="0">Dator Level 0 (Slumping drag)</option>
+                        <option value="1">Dator Level 1 (Hörn och kanter)</option>
+                        <option value="2">Dator Level 2 (Defensiv)</option>
+                        <option value="3">Dator Level 3 (Aggressiv)</option>
+                    </select>
+                    <button id="reset-btn">Börja om</button>
+                </div>
+            </div>
+            <div id="game-board"></div>
         </div>
-        <div id="status">Spelare 1 (Röd) tur</div>
-        <div id="game-board"></div>
     </div>
     <script src="script.js"></script>
 </body>

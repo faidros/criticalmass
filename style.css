@@ -19,22 +19,49 @@ body {
 }
 
 h1 {
-    margin-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+@media (min-width: 800px) {
+    .game-wrapper {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+    }
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    min-width: 250px;
 }
 
 .controls {
-    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
 }
 
 #game-mode, #reset-btn {
-    padding: 8px 12px;
-    margin: 0 5px;
+    padding: 12px 16px;
+    margin: 0;
     background-color: #333;
     color: #fff;
     border: 1px solid #555;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
+    width: 100%;
 }
 
 #game-mode:hover, #reset-btn:hover {
@@ -42,8 +69,8 @@ h1 {
 }
 
 #status {
-    margin-bottom: 20px;
-    font-size: 1.2rem;
+    margin-bottom: 0; /* Changed from 20px since we use gap now */
+    font-size: 1.5rem;
     font-weight: bold;
     color: #ff4d4d; /* Starts with red */
 }
