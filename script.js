@@ -320,41 +320,88 @@ document.addEventListener('DOMContentLoaded', () => {
             const scoredMoves = validMoves.map(move => {
                 let score = 0;
 
-                // Grundvärde utifrån position
-                if (isCorner(move.r, move.c)) score += 10;
-                else if (isEdge(move.r, move.c)) score += 5;
-
-                // För Level 2 och 3, simulera dragets framtid
-                if (level >= 2) {
+                // Level 4: Strategisk expert - hotanalys och positionsvärdering
+                if (level === 4) {
                     const simBoard = simulateMove(board, move.r, move.c, 'blue');
-                    
-                    // Kolla om vi förlorade några av våra hörn (Straff i Level 2+)
-                    getValidMoves(board, 'blue').forEach(orig => {
-                        if (isCorner(orig.r, orig.c) && simBoard[orig.r][orig.c].player !== 'blue') {
-                            score -= 100; // Vi förlorade ett hörn! Det undviker vi!
-                        }
-                    });
+                    let blueScore = 0;
+                    let redScore = 0;
+                    let bCount = 0;
+                    let rCount = 0;
 
-                    // Bonus: Tog vi motståndarens hörn? (Aggressiv belöning, Level 3)
-                    if (level === 3) {
-                        getValidMoves(board, 'red').forEach(orig => {
-                            if (isCorner(orig.r, orig.c) && simBoard[orig.r][orig.c].player === 'blue') {
-                                score += 50; 
-                            }
-                            if (isEdge(orig.r, orig.c) && simBoard[orig.r][orig.c].player === 'blue') {
-                                score += 10;
-                            }
-                        });
-                        
-                        // Liten bonus för att tvinga fram explosioner oavsett utgång
-                        for (let ir = 0; ir < rows; ir++) {
-                            for (let ic = 0; ic < cols; ic++) {
-                                if (simBoard[ir][ic].mass === 0) score += 1; // Saker flyttade på sig
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            const cell = simBoard[r][c];
+                            if (cell.player === null) continue;
+
+                            const capacity = getNeighbors(r, c).length;
+                            const isCritical = cell.mass === capacity - 1;
+
+                            let val = cell.mass * 10;
+                            if (isCorner(r, c)) val += 50;
+                            else if (isEdge(r, c)) val += 20;
+                            if (isCritical) val += 30; // Tickande bomber (kritiska rutor) är bra att äga
+
+                            if (cell.player === 'blue') {
+                                bCount++;
+                                blueScore += val;
+                                
+                                // Hotanalys: Kolla om vi riskerar att sprängas av röd
+                                getNeighbors(r, c).forEach(n => {
+                                    const nCell = simBoard[n.r][n.c];
+                                    const nCap = getNeighbors(n.r, n.c).length;
+                                    // Om en röd ruta som gränsar till oss har uppnått sin bristningsgräns minskar vi score enormt
+                                    if (nCell.player === 'red' && nCell.mass === nCap - 1) {
+                                        blueScore -= 80; 
+                                    }
+                                });
+                            } else if (cell.player === 'red') {
+                                rCount++;
+                                redScore += val;
                             }
                         }
                     }
-                }
-                
+
+                    if (rCount === 0) score = 100000; // Omedelbar vinst
+                    else if (bCount === 0) score = -100000; // Omedelbar förlust
+                    else score = blueScore - redScore; 
+
+                } else {
+                    // Grundvärde utifrån position för AI level 1-3
+                    if (isCorner(move.r, move.c)) score += 10;
+                    else if (isEdge(move.r, move.c)) score += 5;
+
+                    // För Level 2 och 3, simulera dragets framtid
+                    if (level >= 2) {
+                        const simBoard = simulateMove(board, move.r, move.c, 'blue');
+                        
+                        // Kolla om vi förlorade några av våra hörn (Straff i Level 2+)
+                        getValidMoves(board, 'blue').forEach(orig => {
+                            if (isCorner(orig.r, orig.c) && simBoard[orig.r][orig.c].player !== 'blue') {
+                                score -= 100; // Vi förlorade ett hörn! Det undviker vi!
+                            }
+                        });
+
+                        // Bonus: Tog vi motståndarens hörn? (Aggressiv belöning, Level 3)
+                        if (level === 3) {
+                            getValidMoves(board, 'red').forEach(orig => {
+                                if (isCorner(orig.r, orig.c) && simBoard[orig.r][orig.c].player === 'blue') {
+                                    score += 50; 
+                                }
+                                if (isEdge(orig.r, orig.c) && simBoard[orig.r][orig.c].player === 'blue') {
+                                    score += 10;
+                                }
+                            });
+                            
+                            // Liten bonus för att tvinga fram explosioner oavsett utgång
+                            for (let ir = 0; ir < rows; ir++) {
+                                for (let ic = 0; ic < cols; ic++) {
+                                    if (simBoard[ir][ic].mass === 0) score += 1; // Saker flyttade på sig
+                                }
+                            }
+                        }
+                    }
+                } // Stänger if(level === 4) vs else-blocket
+
                 // Slumpmässigt "brus" så datorn inte alltid gör exakt samma val vid lika poäng
                 score += Math.random(); 
 
