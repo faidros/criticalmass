@@ -19,6 +19,7 @@ body {
 }
 
 h1 {
+    font-size: 1.7rem;
     margin-bottom: 30px;
 }
 
@@ -60,7 +61,7 @@ h1 {
     border: 1px solid #555;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.85rem;
     width: 100%;
 }
 
@@ -70,7 +71,7 @@ h1 {
 
 #status {
     margin-bottom: 0; /* Changed from 20px since we use gap now */
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
     color: #ff4d4d; /* Starts with red */
 }
